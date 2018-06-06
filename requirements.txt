@@ -1,3 +1,1 @@
-guizero
-twython
 Pillow

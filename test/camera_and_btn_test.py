@@ -1,3 +1,14 @@
+'''
+Setup
+
+> pip3 install -r requirements
+
+
+Pillow install
+
+> apt-get install python3-pil
+'''
+
 from guizero import App, PushButton, Text, Picture
 from gpiozero import Button
 from picamera import PiCamera
