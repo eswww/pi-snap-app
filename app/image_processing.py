@@ -2,26 +2,15 @@ import os
 import smtplib
 import datetime
 
-from picamera import PiCamera
-
 from pokinator import Pokinator
 from PIL import Image, ImageDraw, ImageFont
 
 from email.message import EmailMessage
 from email.mime.application import MIMEApplication
 
-def take_picture(camera):
-    img_name = Pokinator.generate(generation=2, lowercase=True)
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    img_path = os.path.join(base_dir, 'static', img_name)
 
-    camera.capture(img_path)
-    camera.stop_preview()
-
-    return img_path
-
-def insert_datetime(image_path):
-    img = Image.open(image_path).convert('RGBA')
+def insert_datetime(img_path):
+    img = Image.open(img_path).convert('RGBA')
 
     ext_size = (img.size[0]+30, img.size[1]+120)
     ext_img = Image.new('RGBA', ext_size, (0, 0, 0, 0))
@@ -37,8 +26,7 @@ def insert_datetime(image_path):
     tmp.text((15, ext_img.size[1]-65), today, fill='white', font=fnt, align='center')
 
     img_bin = Image.alpha_composite(ext_img, txt)
-    img_bin.save()
-    return img_bin
+    img_bin.save(img_path)
 
 def insert_icon(img_path, light):
     img = Image.open(img_path).convert('RGBA')
@@ -58,7 +46,7 @@ def insert_icon(img_path, light):
     box = (mbox[2] - sbox[2] - 10, mbox[3] - sbox[3]+30)
     img.paste(s_image, box)
 
-    return img
+    img.save(img_path)
 
 def send_email(img_path, from_email, to_email):
     img_name = os.path.basename(img_path)
@@ -88,8 +76,3 @@ def send_email(img_path, from_email, to_email):
         smtp.ehlo()
         smtp.login(from_email, os.environ['GMAIL_PASS'])
         smtp.send_message(msg)
-
-
-if __name__ == '__main__':
-    img = './static/example.jpg'
-    send_email(img, 'nojamrobot@gmail.com', 'punkkid001@gmail.com')
