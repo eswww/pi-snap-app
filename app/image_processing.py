@@ -2,7 +2,6 @@ import os
 import smtplib
 import datetime
 
-from pokinator import Pokinator
 from PIL import Image, ImageDraw, ImageFont
 
 from email.message import EmailMessage
