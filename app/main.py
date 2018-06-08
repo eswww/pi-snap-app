@@ -1,46 +1,71 @@
 import os
+import io
 
-from picamera import PiCamera
-from pokinator import Pokinator
+import socket
+import asyncio
+from multiprocessing import Process, Queue
 
 from gpiozero import Button
 from guizero import App, PushButton, Text, Picture
 
-from image_processing import send_email, insert_datetime, insert_icon
+from camera import Camera
 
 
-def new_picture():
-    global camera, img_path
-    camera.start_preview()
+def cam_control():
+    global cam, q
+    cam.new_picture()
+    while True:
+        data = q.get()
+        print('[consumer] ' + str(data))
+        if data != '1':
+            continue
+        cam.take_picture()
+        break
+    print('[consumer] done')
 
-def take_picture():
-    global camera, img_path
+def server_init():
+    print('server init')
+    loop.create_task(server_task())
+    loop.run_forever()
+    loop.close()
 
-    img_name = Pokinator.generate(generation=2, lowercase=True) + '.png'
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    img_path = os.path.join(base_dir, 'static', img_name)
+async def server_handler(conn):
+    global q
+    while True:
+        msg = await loop.sock_recv(conn, io.DEFAULT_BUFFER_SIZE)
+        print(msg, len(msg))
+        q.put(msg.decode('utf8'))
 
-    camera.capture(img_path)
-    camera.stop_preview()
+        if not msg:
+            break
+    conn.close()
 
-    insert_datetime(img_path)
-    insert_icon(img_path, True)
-    #send_email(img_path, 'nojamrobot@gmail.com', 'punkkid001@gmail.com')
+async def server_task():
+    while True:
+        conn, addr = await loop.sock_accept(server)
+        loop.create_task(server_handler(conn))
 
 
 if __name__ == '__main__':
-    img_path = 'temporary_path'
+    host = '127.0.0.1'
+    port = 2324
+    q = Queue()
 
-    camera = PiCamera()
-    camera.resolution = (400, 400)
-    camera.hflip = True
+    cam = Camera()
 
-    take_pic_btn = Button(25)
-    take_pic_btn.when_pressed = take_picture
+    # Setting server socket
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.setblocking(False)
+    server.bind((host, port))
+    server.listen(10)
+    loop = asyncio.get_event_loop()
 
-    camera.start_preview()
+    proc = Process(target=server_init)
+    proc.start()
 
     app = App('Pi-Snap')
     txt = Text(app, 'Welcome to Pi-Snap!')
-    new_pic_icon = PushButton(app, new_picture, text='New pic')
+    new_pic_icon = PushButton(app, cam_control, text='New pic')
+    take_pic_icon = PushButton(app, cam.take_picture, text='take pic')
     app.display()
