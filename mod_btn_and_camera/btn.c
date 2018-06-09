@@ -1,4 +1,4 @@
-#include <linux/init.h>#
+#include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/gpio.h>       // Required for the GPIO functions
@@ -9,9 +9,9 @@
 #define DEV_NAME "btn_test"
 
 #define gpioButton 26
-#define DEBOUNCE_TIME 200    ///< The default bounce time -- 200ms
+#define DEBOUNCE_TIME 50    ///< The default bounce time -- 200ms
 
-MODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL");;
 static int irqNumber;
 static bool isRising = 1;                   ///< Rising edge is the default IRQ property
 static int  numberPresses = 0;            ///< For information, store the number of button presses for test.
@@ -19,9 +19,9 @@ module_param(isRising, bool, S_IRUGO);      ///< Param desc. S_IRUGO can be read
 MODULE_PARM_DESC(isRising, " Rising edge = 1 (default), Falling edge = 0");  ///< parameter description
 
 //irq handle_button
-static irq_handler_t  ebbgpio_irq_handler(unsigned int irq, void *dev_id);
+static irq_handler_t  ebbgpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs);
 
-static irq_handler_t ebbgpio_irq_handler(unsigned int irq, void *dev_id){
+static irq_handler_t ebbgpio_irq_handler(unsigned int irq, void *dev_id, struct pt_regs *regs){
 
    printk(KERN_INFO "button state is currently: %d numberPresses : %d\n", gpio_get_value(gpioButton),numberPresses);
    numberPresses++;                     // Global counter, will be outputted when the module is unloaded
@@ -55,17 +55,16 @@ static int __init ebbButton_init(void){
 
    printk(KERN_INFO "EBB Button: Initializing the EBB Button\n");
 
-   gpio_request_one(gpioButton,GPIOF_IN, "sysfs");       // Set up the gpioButton
-   //gpio_direction_input(gpioButton);        // Set the button GPIO to be an input
-  // gpio_set_debounce(gpioButton, 200);      // Debounce the button with a delay of 200ms
+   gpio_request(gpioButton, "sysfs");       // Set up the gpioButton
+   gpio_direction_input(gpioButton);        // Set the button GPIO to be an input
+   gpio_set_debounce(gpioButton, 200);      // Debounce the button with a delay of 200ms
    gpio_export(gpioButton, false);   /// GPIO numbers and IRQ numbers are not the same! This function performs the mapping for us
    irqNumber = gpio_to_irq(gpioButton);
    printk(KERN_INFO "EBB Button: The button is mapped to IRQ: %d\n", irqNumber);
 
-   //enable_irq(irqNumber);
-   //if(!isRising){                           // If the kernel parameter isRising=0 is supplied
-     // IRQflags = IRQF_TRIGGER_FALLING;      // Set the interrupt to be on the falling edge
-   //}
+   if(!isRising){                           // If the kernel parameter isRising=0 is supplied
+      IRQflags = IRQF_TRIGGER_FALLING;      // Set the interrupt to be on the falling edge
+   }
    // This next call requests an interrupt line
    result = request_irq(irqNumber,             // The interrupt number requested
                         (irq_handler_t) ebbgpio_irq_handler, // The pointer to the handler function below
@@ -86,3 +85,4 @@ static void __exit ebbButton_exit(void){
 
 module_init(ebbButton_init);
 module_exit(ebbButton_exit);
+                        
