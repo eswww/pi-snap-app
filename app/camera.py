@@ -20,7 +20,7 @@ class Camera:
     def take_picture(self):
         img_name = Pokinator.generate(generation=2, lowercase=True) + '.png'
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        img_path = os.path.join(base_dir, 'static', img_name)
+        img_path = os.path.join(base_dir, 'saved_images', img_name)
 
         self.cam.capture(img_path)
         self.cam.stop_preview()
