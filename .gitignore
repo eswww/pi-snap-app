@@ -104,4 +104,4 @@ venv.bak/
 .mypy_cache/
 
 # pictures taken
-static/*.png
+saved_images/*.png
