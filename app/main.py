@@ -21,7 +21,7 @@ def cam_control():
     global cam, q
 
     cam.new_picture()
-    queue_clear()    # Ignore accumulated data"
+    queue_clear()    # Ignore accumulated data
 
     while True:
         data = q.get()
@@ -40,7 +40,7 @@ def server_init():
     loop.close()
 
 async def server_handler(conn):
-    global SIZE, q, cam_q
+    global SIZE, q
 
     while True:
         msg = await loop.sock_recv(conn, io.DEFAULT_BUFFER_SIZE)
