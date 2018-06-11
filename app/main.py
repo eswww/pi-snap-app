@@ -40,7 +40,7 @@ def server_init():
     loop.close()
 
 async def server_handler(conn):
-    global SIZE, q
+    global SIZE, q, cam_q
 
     while True:
         msg = await loop.sock_recv(conn, io.DEFAULT_BUFFER_SIZE)
