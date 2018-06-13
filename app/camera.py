@@ -85,8 +85,9 @@ class Camera:
         insert_datetime(img_path)
         insert_icon(img_path, True)
 
-    def final_process(self, email_addr, is_send):
+        return self.img
+
+    def final_process(self, email_addr):
         # Send an email or back to main
-        if is_send:
-            send_email(self.img, 'nojamrobot@gmail.com', email_addr)
+        send_email(self.img, 'nojamrobot@gmail.com', email_addr)
         self.img = None

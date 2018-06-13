@@ -84,8 +84,10 @@ def send_email(img_path, from_email, to_email):
         multipart.add_header('Content-ID', '<' + img_name + '>')
         msg.attach(multipart)
 
+    print('sending...')
     # Send an email
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.ehlo()
         smtp.login(from_email, os.environ['GMAIL_PASS'])
         smtp.send_message(msg)
+        print('send success')

@@ -5,10 +5,7 @@ import socket
 import asyncio
 from multiprocessing import Process, Queue
 
-from gpiozero import Button
-from guizero import App, PushButton, Text, Picture
-
-from camera import Camera
+from app import Application
 
 
 def queue_clear():
@@ -18,9 +15,9 @@ def queue_clear():
         q.get()
 
 def cam_control():
-    global cam, q
+    global q
 
-    cam.new_picture()
+    app.new_picture()
     queue_clear()    # Ignore accumulated data
 
     while True:
@@ -28,8 +25,9 @@ def cam_control():
         print('[consumer] ' + data)
         if data != '1':
             continue
-        cam.take_picture()
         break
+    path = app.take_picture()
+    app.go_to_result(path)
 
     print('[consumer] done')
 
@@ -66,7 +64,7 @@ if __name__ == '__main__':
     PORT = 2324
     SIZE = 30    # Maximum queue size
     
-    cam = Camera()
+    #cam = Camera()
     q = Queue(maxsize=SIZE)
 
     # Setting server socket
@@ -81,13 +79,8 @@ if __name__ == '__main__':
     proc = Process(target=server_init)
     proc.start()
 
-    # Configuring GUI application
-    app = App('Pi-Snap')
-    txt = Text(app, 'Welcome to Pi-Snap!')
-    new_pic_icon = PushButton(app, cam_control, text='New pic')
-    take_pic_icon = PushButton(app, cam.take_picture, text='take pic')
-
     # Running GUI application
+    app = Application(cam_control)
     app.display()
 
     # When the application is terminated, Server process is terminated
