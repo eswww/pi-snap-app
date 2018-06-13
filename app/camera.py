@@ -87,7 +87,7 @@ class Camera:
 
         return self.img
 
-    def final_process(self, email_addr):
+    def send_email(self, email_addr):
         # Send an email or back to main
         send_email(self.img, 'nojamrobot@gmail.com', email_addr)
         self.img = None

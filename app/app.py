@@ -19,7 +19,8 @@ class Application:
         self.result_img = Picture(self.result)
         self.guide_txt = Text(
             self.result,
-            text='If you want to receive this picture, Please enter your email :)'
+            text='If you want to receive this picture, Please enter your email :)',
+            size=25
         )
         self.email_txt = TextBox(self.result, width=25)
         self.send_btn = PushButton(self.result, self.send_email, text='Send')
@@ -49,4 +50,6 @@ class Application:
 
     def send_email(self):
         email_addr = self.email_txt.value
-        self.cam.final_process(email_addr)
+        self.cam.send_email(email_addr)
+        self.email_txt.value = ''
+        return self.go_to_main()

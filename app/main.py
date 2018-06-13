@@ -22,17 +22,13 @@ def cam_control():
 
     while True:
         data = q.get()
-        print('[consumer] ' + data)
         if data != '1':
             continue
         break
     path = app.take_picture()
     app.go_to_result(path)
 
-    print('[consumer] done')
-
 def server_init():
-    print('[server] init')
     loop.create_task(server_task())
     loop.run_forever()
     loop.close()
