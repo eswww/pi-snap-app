@@ -48,11 +48,11 @@ class Camera:
         )
 
         # Add overlay (countdown)
-        img_list = [
-            './static/overlay_img_1.png',
+        img_list = (
+            './static/overlay_img_3.png',
             './static/overlay_img_2.png',
-            './static/overlay_img_3.png'
-        ]
+            './static/overlay_img_1.png'
+        )
         overlay_img_list = list()
 
         for img in img_list:
