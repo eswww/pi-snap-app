@@ -1,5 +1,6 @@
 from camera import Camera
 
+from multiprocessing import Process
 from guizero import App, Box, PushButton, Text, TextBox, Picture
 
 class Application:
@@ -50,6 +51,8 @@ class Application:
 
     def send_email(self):
         email_addr = self.email_txt.value
-        self.cam.send_email(email_addr)
+        proc = Process(target=self.cam.send_email, args=(email_addr,))
+        proc.start()
         self.email_txt.value = ''
+
         return self.go_to_main()
