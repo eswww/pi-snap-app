@@ -6,6 +6,7 @@ from time import sleep
 from picamera import PiCamera
 from pokinator import Pokinator
 
+from light_sensor import MCP3208
 from image_processing import send_email, insert_datetime, insert_icon
 
 
@@ -17,17 +18,18 @@ class Camera:
         self.cam.led = False
 
         self.img = None
+        self.mcp3208 = MCP3208()
 
     def is_preview(self):
         return self.cam.preview
 
     def set_brightness(self, light):
-        if light:
+        if light > 300:
             self.cam.brightness = 50
             self.cam.contrast = 50
         else:
             self.cam.brightness = 70
-            self.cam.contrast = 10
+            self.cam.contrast = 20
 
     def new_picture(self):
         self.cam.led = True
@@ -83,7 +85,7 @@ class Camera:
 
         # Insert icon and datetime
         insert_datetime(img_path)
-        insert_icon(img_path, True)
+        insert_icon(img_path, self.mcp3208.read())
 
         return self.img
 

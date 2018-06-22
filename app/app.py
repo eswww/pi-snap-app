@@ -3,6 +3,7 @@ from camera import Camera
 from multiprocessing import Process
 from guizero import App, Box, PushButton, Text, TextBox, Picture
 
+
 class Application:
     def __init__(self, cam_control):
         # Configuring GUI application

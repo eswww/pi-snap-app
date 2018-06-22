@@ -3,6 +3,8 @@ import io
 
 import socket
 import asyncio
+
+import threading
 from multiprocessing import Process, Queue
 
 from app import Application
@@ -27,6 +29,13 @@ def cam_control():
         break
     path = app.take_picture()
     app.go_to_result(path)
+
+def button_control():
+    global button
+
+    while True:
+        if not os.read(button, 0):
+            cam_control()
 
 def server_init():
     loop.create_task(server_task())
@@ -59,9 +68,9 @@ if __name__ == '__main__':
     HOST = '127.0.0.1'
     PORT = 2324
     SIZE = 30    # Maximum queue size
-    
-    #cam = Camera()
+
     q = Queue(maxsize=SIZE)
+    button = os.open('/dev/button_driver', os.O_RDWR)
 
     # Setting server socket
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
@@ -77,7 +86,13 @@ if __name__ == '__main__':
 
     # Running GUI application
     app = Application(cam_control)
+
+    th= threading.Thread(target=button_control)
+    th.start()
+
     app.display()
 
     # When the application is terminated, Server process is terminated
     proc.terminate()
+
+    os.close(button)

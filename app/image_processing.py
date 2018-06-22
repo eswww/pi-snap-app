@@ -42,7 +42,7 @@ def insert_icon(img_path, light):
     img = Image.open(img_path).convert('RGBA')
 
     # Day sun / Night moon
-    if light:
+    if light > 170:
         icon = Image.open('./static/sun_icon.png')
     else:
         icon = Image.open('./static/moon_icon.png')
