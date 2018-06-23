@@ -4,7 +4,6 @@ import io
 import socket
 import asyncio
 
-import threading
 from multiprocessing import Process, Queue
 
 from app import Application
@@ -24,18 +23,11 @@ def cam_control():
 
     while True:
         data = q.get()
-        if data != '1':
+        if data != 'ENOUGH':
             continue
         break
     path = app.take_picture()
     app.go_to_result(path)
-
-def button_control():
-    global button
-
-    while True:
-        if not os.read(button, 0):
-            cam_control()
 
 def server_init():
     loop.create_task(server_task())
@@ -65,7 +57,7 @@ async def server_task():
 
 
 if __name__ == '__main__':
-    HOST = '127.0.0.1'
+    HOST = '0.0.0.0'
     PORT = 2324
     SIZE = 30    # Maximum queue size
 
@@ -87,12 +79,7 @@ if __name__ == '__main__':
     # Running GUI application
     app = Application(cam_control)
 
-    th= threading.Thread(target=button_control)
-    th.start()
-
     app.display()
 
     # When the application is terminated, Server process is terminated
     proc.terminate()
-
-    os.close(button)

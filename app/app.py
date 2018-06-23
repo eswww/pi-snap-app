@@ -1,5 +1,9 @@
-from camera import Camera
+import os
+import threading
 
+from camera import Camera
+ 
+from time import sleep
 from multiprocessing import Process
 from guizero import App, Box, PushButton, Text, TextBox, Picture
 
@@ -9,6 +13,8 @@ class Application:
         # Configuring GUI application
         self.app = App('Pi-Snap', width=1920, height=1200)
         self.cam = Camera()
+
+        self.cam_control = cam_control
 
         # Main page(frame)
         self.main = Box(self.app)
@@ -29,8 +35,19 @@ class Application:
         self.cancel_btn = PushButton(self.result, self.go_to_main, text='Cancel')
         self.result.visible = False
 
+        self.th = threading.Thread(target=self.read_button)
+
     def display(self):
+        self.th.start()
         self.app.display()
+
+    def read_button(self):
+        button = os.open('/dev/button_driver', os.O_RDWR)
+        while True:
+            if not os.read(button, 0):
+                self.cam_control()
+                sleep(2)
+        os.close(button)
 
     def go_to_result(self, img_path, email_addr=None):
         self.main.visible = False

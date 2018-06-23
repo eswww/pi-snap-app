@@ -91,5 +91,5 @@ class Camera:
 
     def send_email(self, email_addr):
         # Send an email or back to main
-        send_email(self.img, 'nojamrobot@gmail.com', email_addr)
+        send_email(self.img, 'ethdud1rasb@gmail.com', email_addr)
         self.img = None
