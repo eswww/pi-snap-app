@@ -15,7 +15,7 @@ python project for `pi-snap` application
 ### 1. Install python libraries
 
 ```bash
-pip3 install -r requirements
+$ pip3 install -r requirements
 ```
 
 ### 2. Build
