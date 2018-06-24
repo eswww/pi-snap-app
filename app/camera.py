@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from PIL import Image
 from time import sleep
@@ -83,9 +84,14 @@ class Camera:
         # Save image file path
         self.img = img_path
 
+        light_data = subprocess.check_output('./light/light_sensor.out')
+        light_data = light_data.decode('utf-8')
+        light_data = int(light_data)
+
         # Insert icon and datetime
         insert_datetime(img_path)
         insert_icon(img_path, self.mcp3208.read())
+        #insert_icon(img_path, light_data)
 
         return self.img
 
