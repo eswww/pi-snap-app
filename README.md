@@ -20,8 +20,9 @@ $ pip3 install -r requirements
 
 ### 2. Build
 
+#### ../pi-snap-app/app/light_sensor/
+
 ```bash
-$ cd app/light_sensor
 $ make
 ```
 
