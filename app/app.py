@@ -1,4 +1,5 @@
 import os
+import sys
 import threading
 
 from camera import Camera
@@ -45,6 +46,7 @@ class Application:
     def read_button(self):
         button = os.open('/dev/button_driver', os.O_RDWR)
         while True:
+            sys.stdout.flush()
             if not os.read(button, 0):
                 self.cam_control()
                 sleep(2)
