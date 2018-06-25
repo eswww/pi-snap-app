@@ -48,8 +48,8 @@ class Application:
         while True:
             sys.stdout.flush()
             if not os.read(button, 0):
-                self.cam_control()
-                sleep(2)
+                if self.main.visible == True:
+                    self.cam_control()
         os.close(button)
 
     def go_to_result(self, img_path, email_addr=None):
