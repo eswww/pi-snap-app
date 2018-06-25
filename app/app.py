@@ -36,6 +36,7 @@ class Application:
         self.result.visible = False
 
         self.th = threading.Thread(target=self.read_button)
+        self.th.daemon = True
 
     def display(self):
         self.th.start()

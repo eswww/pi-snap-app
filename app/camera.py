@@ -84,18 +84,18 @@ class Camera:
         # Save image file path
         self.img = img_path
 
+        # Read data from light sensor
         light_data = subprocess.check_output('./light/light_sensor.out')
         light_data = light_data.decode('utf-8')
         light_data = int(light_data)
 
         # Insert icon and datetime
         insert_datetime(img_path)
-        insert_icon(img_path, self.mcp3208.read())
-        #insert_icon(img_path, light_data)
+        insert_icon(img_path, light_data)
 
         return self.img
 
     def send_email(self, email_addr):
         # Send an email or back to main
-        send_email(self.img, 'ethdud1rasb@gmail.com', email_addr)
+        send_email(self.img, 'nojamrobot@gmail.com', email_addr)
         self.img = None
